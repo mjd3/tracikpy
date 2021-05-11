@@ -30,7 +30,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #include "trac_ik.hpp"
-#include </Eigen/Geometry>
+#include <Eigen/Geometry>
 #include <limits>
 #include <kdl_parser/kdl_parser.hpp>
 #include <urdf/model.h>

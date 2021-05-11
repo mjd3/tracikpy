@@ -1,1 +1,1 @@
-from .trac_ik import IK
+from .trac_ik_solver import TracIKSolver

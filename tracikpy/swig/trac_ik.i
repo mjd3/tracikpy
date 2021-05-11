@@ -1,5 +1,5 @@
  /* trac_ik.i */
- %module tracik
+ %module trac_ik_wrap
 
 // Author: Sammy Pfeiffer <Sammy.Pfeiffer at student.uts.edu.au>
 

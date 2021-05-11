@@ -1,11 +1,16 @@
+# VSCode settings
 .vscode
+
+# C++ Extensions
 build
-
-*.pyc
 *.so
+
+# Python caching and package stuff
+*.pyc
 *.egg-info
-
-tracikpy/trac_ik_wrap.cpp
-tracikpy/tracik.py
-
 __pycache__
+
+# Swig generated files
+*_wrap.cpp
+*_wrap.py
+
