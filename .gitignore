@@ -1,5 +1,8 @@
+.vscode
 build
 
 *.pyc
 *.so
 *.egg-info
+
+__pycache__
