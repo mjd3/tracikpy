@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "limits": "cpp",
+        "ros.h": "c",
+        "kdl_parser.hpp": "c"
+    }
+}
