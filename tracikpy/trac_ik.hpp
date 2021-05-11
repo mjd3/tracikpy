@@ -37,7 +37,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <thread>
 #include <mutex>
 #include <memory>
-#include <boost/date_time.hpp>
+#include <chrono>
 
 namespace TRAC_IK
 {
@@ -118,8 +118,7 @@ private:
   std::unique_ptr<NLOPT_IK::NLOPT_IK> nl_solver;
   std::unique_ptr<KDL::ChainIkSolverPos_TL> iksolver;
 
-  boost::posix_time::ptime start_time;
-
+  std::chrono::time_point<std::chrono::steady_clock> start_time;
   template<typename T1, typename T2>
   bool runSolver(T1& solver, T2& other_solver,
                  const KDL::JntArray &q_init,

@@ -30,11 +30,13 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #include "trac_ik.hpp"
-#include <boost/date_time.hpp>
-#include <Eigen/Geometry>
+#include </Eigen/Geometry>
 #include <limits>
 #include <kdl_parser/kdl_parser.hpp>
 #include <urdf/model.h>
+#include <chrono>
+
+using Clock = std::chrono::steady_clock;
 
 namespace TRAC_IK
 {
@@ -213,13 +215,12 @@ bool TRAC_IK::runSolver(T1& solver, T2& other_solver,
   double fulltime = maxtime;
   KDL::JntArray seed = q_init;
 
-  boost::posix_time::time_duration timediff;
   double time_left;
 
   while (true)
   {
-    timediff = boost::posix_time::microsec_clock::local_time() - start_time;
-    time_left = fulltime - timediff.total_nanoseconds() / 1000000000.0;
+    auto timediff = Clock::now() - start_time;
+    time_left = fulltime - std::chrono::duration<double>(timediff).count();
 
     if (time_left <= 0)
       break;
@@ -402,7 +403,7 @@ int TRAC_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL:
   }
 
 
-  start_time = boost::posix_time::microsec_clock::local_time();
+  start_time = Clock::now();
 
   nl_solver->reset();
   iksolver->reset();

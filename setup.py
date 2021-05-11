@@ -19,18 +19,15 @@ setup(
             'tracikpy._tracik',
             [
                 'tracikpy/trac_ik.i',
-                'tracikpy/trac_ik.cpp'
-            ],
-            depends=[
-                'tracikpy/kdl_tl.cpp',
+                'tracikpy/trac_ik.cpp',
                 'tracikpy/nlopt_ik.cpp',
+                'tracikpy/kdl_tl.cpp',
             ],
             include_dirs=[
                 "tracikpy",
                 "/usr/include/eigen3",
             ],
-            libraries=["orocos-kdl", "nlopt"],
-            runtime_libraries=["orocos-kdl", "nlopt"],
+            libraries=["orocos-kdl", "nlopt", "urdf", "kdl_parser"],
             swig_opts=['-c++'],
         )
     ],

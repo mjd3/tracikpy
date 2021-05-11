@@ -58,7 +58,6 @@ namespace std {
       double timeout, double epsilon, const std::string& solve_type="Speed"){
 
       urdf::Model robot_model;
-
       robot_model.initString(urdf_string);
 
       // ROS_DEBUG_STREAM_NAMED("trac_ik","Reading joints and links from URDF");

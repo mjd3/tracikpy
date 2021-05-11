@@ -3,8 +3,7 @@
 # Author: Sammy Pfeiffer <Sammy.Pfeiffer at student.uts.edu.au>
 # Convenience code to wrap TRAC IK
 
-from . import TRAC_IK
-#import rospy
+from .tracik import TRAC_IK
 
 
 class IK(object):

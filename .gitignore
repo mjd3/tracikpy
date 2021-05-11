@@ -5,4 +5,7 @@ build
 *.so
 *.egg-info
 
+tracikpy/trac_ik_wrap.cpp
+tracikpy/tracik.py
+
 __pycache__

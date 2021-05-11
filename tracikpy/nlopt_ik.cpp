@@ -31,10 +31,11 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "nlopt_ik.hpp"
 #include "dual_quaternion.h"
 #include <limits>
-#include <boost/date_time.hpp>
 #include <cmath>
+#include <chrono>
 
 
+using Clock = std::chrono::steady_clock;
 
 namespace NLOPT_IK
 {
@@ -63,7 +64,7 @@ double minfuncDQ(const std::vector<double>& x, std::vector<double>& grad, void* 
 
   std::vector<double> vals(x);
 
-  double jump = boost::math::tools::epsilon<float>();
+  double jump = std::numeric_limits<float>::epsilon();
   double result[1];
   c->cartDQError(vals, result);
 
@@ -97,7 +98,7 @@ double minfuncSumSquared(const std::vector<double>& x, std::vector<double>& grad
 
   std::vector<double> vals(x);
 
-  double jump = boost::math::tools::epsilon<float>();
+  double jump = std::numeric_limits<float>::epsilon();
   double result[1];
   c->cartSumSquaredError(vals, result);
 
@@ -131,7 +132,7 @@ double minfuncL2(const std::vector<double>& x, std::vector<double>& grad, void* 
 
   std::vector<double> vals(x);
 
-  double jump = boost::math::tools::epsilon<float>();
+  double jump = std::numeric_limits<float>::epsilon();
   double result[1];
   c->cartL2NormError(vals, result);
 
@@ -170,7 +171,7 @@ void constrainfuncm(uint m, double* result, uint n, const double* x, double* gra
     vals[i] = x[i];
   }
 
-  double jump = boost::math::tools::epsilon<float>();
+  double jump = std::numeric_limits<float>::epsilon();
 
   c->cartSumSquaredError(vals, result);
 
@@ -233,7 +234,7 @@ NLOPT_IK::NLOPT_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const 
 
   assert(types.size() == lb.size());
 
-  std::vector<double> tolerance(1, boost::math::tools::epsilon<float>());
+  std::vector<double> tolerance(1, std::numeric_limits<float>::epsilon());
   opt.set_xtol_abs(tolerance[0]);
 
 
@@ -452,8 +453,7 @@ int NLOPT_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL
   // Returns -3 if a configuration could not be found within the eps
   // set up in the constructor.
 
-  boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
-  boost::posix_time::time_duration diff;
+  auto start_time = Clock::now();
 
   bounds = _bounds;
   q_out = q_init;
@@ -588,8 +588,8 @@ int NLOPT_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL
   {
 
     double time_left;
-    diff = boost::posix_time::microsec_clock::local_time() - start_time;
-    time_left = maxtime - diff.total_nanoseconds() / 1000000000.0;
+    auto diff_time = Clock::now() - start_time;
+    time_left = maxtime - std::chrono::duration<double>(diff_time).count(); /// 1000000000.0;
 
     while (time_left > 0 && !aborted && progress < 0)
     {
@@ -608,8 +608,8 @@ int NLOPT_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL
       if (progress == -1) // Got NaNs
         progress = -3;
 
-      diff = boost::posix_time::microsec_clock::local_time() - start_time;
-      time_left = maxtime - diff.total_nanoseconds() / 1000000000.0;
+      diff_time =  Clock::now() - start_time;
+      time_left = maxtime - std::chrono::duration<double>(diff_time).count();
     }
   }
 
