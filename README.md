@@ -1,5 +1,8 @@
 # Tracikpy
-This repo contains Python bindings for TracIK based on the ROS packages and SWIG bindings provided by TRACLabs [here](https://bitbucket.org/traclabs/trac_ik/src/master/) (see [paper](https://ieeexplore.ieee.org/document/7363472) for implementation details) and the updates provided by Clemens Eppner [here](https://bitbucket.org/clemi/trac_ik/src/devel/). The goal of this repo is to encapsulate these bindings into a Python package that can be easily installed using `pip` and can be used independently of ROS. This package does still contain several system-level dependencies (`eigen`, `orocos-kdl`, `nlopt`, `urdf`, and `kdl_parser`), but the Python wrapper relies only on `numpy`.
+This repo contains Python bindings for TracIK based on the ROS packages and SWIG bindings provided by TRACLabs [here](https://bitbucket.org/traclabs/trac_ik/src/master/) (see [paper](https://ieeexplore.ieee.org/document/7363472) for implementation details) and the updates provided by Clemens Eppner [here](https://bitbucket.org/clemi/trac_ik/src/devel/). For now, it only supports Ubuntu operating systems. The goal of this repo is to encapsulate these bindings into a Python package that can be easily installed using `pip` (with `numpy` as the only Python dependency) and can be used independently of ROS. This package does still contain several system-level dependencies (`eigen`, `orocos-kdl`, `nlopt`, `urdf`, and `kdl_parser`); if you have already installed ROS then these will be installed already. If not, you can install using `apt-get`:
+```
+sudo apt-get install libeigen3-dev liborocos-kdl-dev libkdl-parser-dev liburdf-dev libnlopt-dev
+```
 
 Main differences from original library/bindings:
  - ROS and Boost dependencies removed (replaced with C++ standard library calls).
