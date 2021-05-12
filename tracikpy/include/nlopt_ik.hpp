@@ -31,8 +31,8 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef NLOPT_IK_HPP
 #define NLOPT_IK_HPP
 
+#include <nlopt.hpp>
 #include "kdl_tl.hpp"
-#include "nlopt.hpp"
 
 
 namespace NLOPT_IK
