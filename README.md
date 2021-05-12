@@ -51,6 +51,8 @@ assert np.linalg.norm(ee_diff[:3, :3] - np.eye(3), ord=1) < 1e-3
 which should not output any assertion errors since the pose is close to the desired pose.
 
 TODO:
+ - Fix GitHub Actions CI (figure out how to include external deps)
  - Migrate SWIG std_vector.i templates to numpy.i (see [here](https://numpy.org/devdocs/reference/swig.interface-file.html))
+ - Integrate CIBuildWheel?
 
 Many thanks to TRACLabs (Patrick Beeson and Barrett Ames) for the initial TracIK library, to Sammy Pfeiffer for the initial Python bindings, and to Clemens Eppner for initial cleanup to remove ROS dependencies.
