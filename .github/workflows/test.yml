@@ -36,6 +36,9 @@ jobs:
     - name: Install pip
       run: |
         python -m pip install --upgrade pip
+    - name: Install System Deps
+      run: |
+        sudo apt-get install -y libeigen3-dev liborocos-kdl-dev libkdl-parser-dev liburdf-dev libnlopt-dev
     - name: Install Tracikpy and Pytest
       run: pip install .[test]
     - name: Run Tests

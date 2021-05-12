@@ -80,7 +80,8 @@ class TracIKSolver:
             qinit = np.random.uniform(*self.joint_limits)
         elif len(qinit) != self.number_of_joints:
             raise ValueError(
-                f"qinit has length {len(qinit):d} and it should have length {self.number_of_joints:d}"
+                f"qinit has length {len(qinit):d} "
+                f"and it should have length {self.number_of_joints:d}"
             )
 
         if not isinstance(ee_pose, np.ndarray) or ee_pose.dtype != np.float64:
@@ -98,7 +99,8 @@ class TracIKSolver:
     def fk(self, q):
         if len(q) != self.number_of_joints:
             raise ValueError(
-                f"q has length {len(q):d} and it should have length {self.number_of_joints:d}"
+                f"q has length {len(q):d} "
+                f"and it should have length {self.number_of_joints:d}"
             )
         if not isinstance(q, np.ndarray) or q.dtype != np.float64:
             q = np.array(q, dtype=np.float64)
@@ -131,12 +133,14 @@ class TracIKSolver:
             raise ValueError("bounds must be an iterable with two lists")
         if len(lower_bounds) != self.number_of_joints:
             raise ValueError(
-                f"lower_bounds array size mismatch, input size {len(lower_bounds):d}, should be {self.number_of_joints:d}"
+                "lower_bounds array size mismatch, input size "
+                f"{len(lower_bounds):d}, should be {self.number_of_joints:d}"
             )
 
         if len(upper_bounds) != self.number_of_joints:
             raise ValueError(
-                f"upper_bounds array size mismatch, input size {len(upper_bounds):d}, should be {self.number_of_joints:d}"
+                "upper_bounds array size mismatch, input size "
+                f"{len(upper_bounds):d}, should be {self.number_of_joints:d}"
             )
         self._ik_solver.setKDLLimits(lower_bounds, upper_bounds)
 

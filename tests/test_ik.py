@@ -7,6 +7,7 @@ from tracikpy import TracIKSolver
 def ik_solver():
     return TracIKSolver("data/franka_panda.urdf", "panda_link0", "panda_hand")
 
+
 @pytest.fixture
 def ee_pose():
     return np.array(
@@ -84,7 +85,9 @@ def test_ik_fk(ik_solver, ee_pose):
     assert np.linalg.norm(ee_diff[:3, :3] - np.eye(3), ord=1) < 1e-3
 
     # Try with lists
-    qout_list = ik_solver.ik(ee_pose.tolist(), qinit=np.zeros(ik_solver.number_of_joints).tolist())
+    qout_list = ik_solver.ik(
+        ee_pose.tolist(), qinit=np.zeros(ik_solver.number_of_joints).tolist()
+    )
     ee_out_list = ik_solver.fk(qout.tolist())
     assert np.all(qout == qout_list)
     assert np.all(ee_out_list == ee_out)
@@ -103,6 +106,7 @@ def test_ik_fk(ik_solver, ee_pose):
     qout = ik_solver.ik(ee_pose, qinit=np.zeros(ik_solver.number_of_joints))
     assert qout is None
 
+
 # Test that exceptions are raised correctly
 def test_ik_errs(ik_solver, ee_pose):
     bad_qinit = np.zeros(ik_solver.number_of_joints - 1)
@@ -115,9 +119,9 @@ def test_ik_errs(ik_solver, ee_pose):
     bounds = ik_solver.joint_limits[0]
     with pytest.raises(ValueError):
         ik_solver.joint_limits = bounds
-    
+
     with pytest.raises(ValueError):
         ik_solver.joint_limits = (bad_qinit, bounds)
-    
+
     with pytest.raises(ValueError):
         ik_solver.joint_limits = (bounds, bad_qinit)
