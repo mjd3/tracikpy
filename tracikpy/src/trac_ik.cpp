@@ -31,9 +31,9 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "trac_ik.hpp"
 #include <Eigen/Geometry>
-#include <limits>
 #include <kdl_parser/kdl_parser.hpp>
 #include <urdf/model.h>
+#include <limits>
 #include <chrono>
 
 using Clock = std::chrono::steady_clock;
@@ -290,8 +290,6 @@ void TRAC_IK::normalize_seed(const KDL::JntArray& seed, KDL::JntArray& solution)
   // Make sure rotational joint values are within 1 revolution of seed; then
   // ensure joint limits are met.
 
-  bool improved = false;
-
   for (uint i = 0; i < lb.data.size(); i++)
   {
 
@@ -319,8 +317,6 @@ void TRAC_IK::normalize_limits(const KDL::JntArray& seed, KDL::JntArray& solutio
 {
   // Make sure rotational joint values are within 1 revolution of middle of
   // limits; then ensure joint limits are met.
-
-  bool improved = false;
 
   for (uint i = 0; i < lb.data.size(); i++)
   {
@@ -398,7 +394,7 @@ int TRAC_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL:
 
   if (!initialized)
   {
-    std::cerr << ("TRAC-IK was not properly initialized with a valid chain or limits.  IK cannot proceed");
+    std::cerr << ("TRAC-IK was not properly initialized with a valid chain or limits. IK cannot proceed");
     return -1;
   }
 

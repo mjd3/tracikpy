@@ -44,10 +44,10 @@ dual_quaternion targetDQ;
 
 double minfunc(const std::vector<double>& x, std::vector<double>& grad, void* data)
 {
-  // Auxilory function to minimize (Sum of Squared joint angle error
+  // Auxiliary function to minimize (Sum of Squared joint angle error
   // from the requested configuration).  Because we wanted a Class
   // without static members, but NLOpt library does not support
-  // passing methods of Classes, we use these auxilary functions.
+  // passing methods of Classes, we use these auxiliary functions.
 
   NLOPT_IK *c = (NLOPT_IK *) data;
 
@@ -56,10 +56,10 @@ double minfunc(const std::vector<double>& x, std::vector<double>& grad, void* da
 
 double minfuncDQ(const std::vector<double>& x, std::vector<double>& grad, void* data)
 {
-  // Auxilory function to minimize (Sum of Squared joint angle error
+  // Auxiliary function to minimize (Sum of Squared joint angle error
   // from the requested configuration).  Because we wanted a Class
   // without static members, but NLOpt library does not support
-  // passing methods of Classes, we use these auxilary functions.
+  // passing methods of Classes, we use these auxiliary functions.
   NLOPT_IK *c = (NLOPT_IK *) data;
 
   std::vector<double> vals(x);
@@ -89,10 +89,10 @@ double minfuncDQ(const std::vector<double>& x, std::vector<double>& grad, void* 
 
 double minfuncSumSquared(const std::vector<double>& x, std::vector<double>& grad, void* data)
 {
-  // Auxilory function to minimize (Sum of Squared joint angle error
+  // Auxiliary function to minimize (Sum of Squared joint angle error
   // from the requested configuration).  Because we wanted a Class
   // without static members, but NLOpt library does not support
-  // passing methods of Classes, we use these auxilary functions.
+  // passing methods of Classes, we use these auxiliary functions.
 
   NLOPT_IK *c = (NLOPT_IK *) data;
 
@@ -123,10 +123,10 @@ double minfuncSumSquared(const std::vector<double>& x, std::vector<double>& grad
 
 double minfuncL2(const std::vector<double>& x, std::vector<double>& grad, void* data)
 {
-  // Auxilory function to minimize (Sum of Squared joint angle error
+  // Auxiliary function to minimize (Sum of Squared joint angle error
   // from the requested configuration).  Because we wanted a Class
   // without static members, but NLOpt library does not support
-  // passing methods of Classes, we use these auxilary functions.
+  // passing methods of Classes, we use these auxiliary functions.
 
   NLOPT_IK *c = (NLOPT_IK *) data;
 
@@ -158,7 +158,7 @@ double minfuncL2(const std::vector<double>& x, std::vector<double>& grad, void* 
 
 void constrainfuncm(uint m, double* result, uint n, const double* x, double* grad, void* data)
 {
-  //Equality constraint auxilary function for Euclidean distance .
+  //Equality constraint auxiliary function for Euclidean distance.
   //This also uses a small walk to approximate the gradient of the
   //constraint function at the current joint angles.
 
@@ -589,7 +589,7 @@ int NLOPT_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL
 
     double time_left;
     auto diff_time = Clock::now() - start_time;
-    time_left = maxtime - std::chrono::duration<double>(diff_time).count(); /// 1000000000.0;
+    time_left = maxtime - std::chrono::duration<double>(diff_time).count();
 
     while (time_left > 0 && !aborted && progress < 0)
     {

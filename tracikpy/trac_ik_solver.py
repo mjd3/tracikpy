@@ -9,11 +9,18 @@ from .swig.trac_ik_wrap import TRAC_IK
 
 
 class TracIKSolver:
-    def __init__(self, urdf_file, base_link, tip_link,
-                 timeout=0.005, epsilon=1e-5, solve_type="Speed"):
+    def __init__(
+        self,
+        urdf_file,
+        base_link,
+        tip_link,
+        timeout=0.005,
+        epsilon=1e-5,
+        solve_type="Speed",
+    ):
         """
         Create a TRAC_IK instance and keep track of it.
-        
+
         :param urdf_file str: path to URDF file
         :param str base_link: Starting link of the chain.
         :param str tip_link: Last link of the chain.
@@ -21,7 +28,7 @@ class TracIKSolver:
         :param float epsilon: Error epsilon.
         :param solve_type str: Type of solver, can be:
             Speed (default), Distance, Manipulation1, Manipulation2
-       
+
         """
         self._urdf_string = "".join(open(urdf_file, "r").readlines())
         self.base_link = base_link
@@ -29,19 +36,31 @@ class TracIKSolver:
         self._timeout = timeout
         self._epsilon = epsilon
         self._solve_type = solve_type
-        self._ik_solver = TRAC_IK(self.base_link,
-                                  self.tip_link,
-                                  self._urdf_string,
-                                  self._timeout,
-                                  self._epsilon,
-                                  self._solve_type)
+        self._ik_solver = TRAC_IK(
+            self.base_link,
+            self.tip_link,
+            self._urdf_string,
+            self._timeout,
+            self._epsilon,
+            self._solve_type,
+        )
         self.number_of_joints = self._ik_solver.getNrOfJointsInChain()
-        self.joint_names = self._ik_solver.getJointNamesInChain(self._urdf_string)
+        self.joint_names = self._ik_solver.getJointNamesInChain(
+            self._urdf_string
+        )
         self.link_names = self._ik_solver.getLinkNamesInChain()
 
-    def get_ik(self, ee_pose, qinit=None,
-               bx=1e-5, by=1e-5, bz=1e-5,
-               brx=1e-3, bry=1e-3, brz=1e-3):
+    def ik(
+        self,
+        ee_pose,
+        qinit=None,
+        bx=1e-5,
+        by=1e-5,
+        bz=1e-5,
+        brx=1e-3,
+        bry=1e-3,
+        brz=1e-3,
+    ):
         """
         Do the IK call.
 
@@ -58,9 +77,11 @@ class TracIKSolver:
         :rtype: np.ndarray of float.
         """
         if qinit is None:
-            qinit = np.random.uniform(*self.get_joint_limits())
+            qinit = np.random.uniform(*self.joint_limits)
         elif len(qinit) != self.number_of_joints:
-            raise ValueError(f"qinit has length {len(qinit):d} and it should have length {self.number_of_joints:d}")
+            raise ValueError(
+                f"qinit has length {len(qinit):d} and it should have length {self.number_of_joints:d}"
+            )
 
         if not isinstance(ee_pose, np.ndarray) or ee_pose.dtype != np.float64:
             ee_pose = np.array(ee_pose, dtype=np.float64)
@@ -69,14 +90,23 @@ class TracIKSolver:
         xyz = ee_pose[:3, 3]
         q = self._q_from_pose(ee_pose)
         q = np.roll(q, -1)
-        solution = self._ik_solver.CartToJnt(qinit,
-                                             *xyz,
-                                             *q,
-                                             bx, by, bz,
-                                             brx, bry, brz)
+        solution = self._ik_solver.CartToJnt(
+            qinit, *xyz, *q, bx, by, bz, brx, bry, brz
+        )
         return np.array(solution) if solution else None
 
-    def get_joint_limits(self):
+    def fk(self, q):
+        if len(q) != self.number_of_joints:
+            raise ValueError(
+                f"q has length {len(q):d} and it should have length {self.number_of_joints:d}"
+            )
+        if not isinstance(q, np.ndarray) or q.dtype != np.float64:
+            q = np.array(q, dtype=np.float64)
+        solution = self._ik_solver.JntToCart(q)
+        return np.array(solution) if solution else None
+
+    @property
+    def joint_limits(self):
         """
         Return lower bound limits and upper bound limits for all the joints
         in the order of the joint names.
@@ -85,7 +115,8 @@ class TracIKSolver:
         ub = self._ik_solver.getUpperBoundLimits()
         return np.array(lb), np.array(ub)
 
-    def set_joint_limits(self, lower_bounds, upper_bounds):
+    @joint_limits.setter
+    def joint_limits(self, bounds):
         """
         Set joint limits for all the joints.
 
@@ -94,15 +125,23 @@ class TracIKSolver:
         :arg list upper_bounds: List of float of the upper bound limits for
             all joints.
         """
+        try:
+            lower_bounds, upper_bounds = bounds
+        except ValueError:
+            raise ValueError("bounds must be an iterable with two lists")
         if len(lower_bounds) != self.number_of_joints:
-            raise ValueError(f"lower_bounds array size mismatch, input size {len(lower_bounds):d}, should be {self.number_of_joints:d}")
+            raise ValueError(
+                f"lower_bounds array size mismatch, input size {len(lower_bounds):d}, should be {self.number_of_joints:d}"
+            )
 
         if len(upper_bounds) != self.number_of_joints:
-            raise ValueError(f"upper_bounds array size mismatch, input size {len(upper_bounds):d}, should be {self.number_of_joints:d}")
+            raise ValueError(
+                f"upper_bounds array size mismatch, input size {len(upper_bounds):d}, should be {self.number_of_joints:d}"
+            )
         self._ik_solver.setKDLLimits(lower_bounds, upper_bounds)
-    
+
     def _q_from_pose(self, pose):
-        q = np.empty((4, ))
+        q = np.empty((4,))
         t = np.trace(pose)
         if t > pose[3, 3]:
             q[0] = t

@@ -1,20 +1,20 @@
- /* trac_ik.i */
- %module trac_ik_wrap
+/* trac_ik.i */
+%module trac_ik_wrap
 
 // Author: Sammy Pfeiffer <Sammy.Pfeiffer at student.uts.edu.au>
+%{
+/* Includes the header in the wrapper code */
+#include "trac_ik.hpp"
+#include <urdf/model.h>
+#include <kdl_parser/kdl_parser.hpp>
+#include <kdl/chainfksolverpos_recursive.hpp>
+#include <limits>
+%}
 
- %{
- /* Includes the header in the wrapper code */
- #include "trac_ik.hpp"
- #include <urdf/model.h>
- #include <kdl_parser/kdl_parser.hpp>
- #include <limits>
- %}
-
- // We need this or we will get on runtime
- // NotImplementedError: Wrong number or type of arguments for overloaded function
- %include <std_string.i>
- %include <std_vector.i>
+// We need this or we will get on runtime
+// NotImplementedError: Wrong number or type of arguments for overloaded function
+%include <std_string.i>
+%include <std_vector.i>
 
 // From http://stackoverflow.com/a/8752983
 // Instantiate templates used by example
@@ -23,6 +23,7 @@ namespace std {
    %template(DoubleVector) vector<double>;
    %template(StringVector) vector<string>;
    %template(ConstCharVector) vector<const char*>;
+   %template(VectorOfStructVector) vector<vector<double> >;
 }
 
 // USEFUL DOCS: http://www.swig.org/Doc1.3/SWIG.html
@@ -82,8 +83,6 @@ namespace std {
 
       urdf::JointConstSharedPtr joint;
 
-      std::vector<double> l_bounds, u_bounds;
-
       KDL::JntArray joint_min, joint_max;
 
       joint_min.resize(num_joints_);
@@ -128,9 +127,7 @@ namespace std {
         }
       }
 
-
       TRAC_IK::SolveType solvetype;
-
       if (solve_type == "Manipulation1")
         solvetype = TRAC_IK::Manip1;
       else if (solve_type == "Manipulation2")
@@ -143,8 +140,9 @@ namespace std {
           }
           solvetype = TRAC_IK::Speed;
       }
-          TRAC_IK::TRAC_IK* newX = new TRAC_IK::TRAC_IK(chain, joint_min, joint_max, timeout, epsilon, solvetype);
-          return newX;
+      
+      TRAC_IK::TRAC_IK* newX = new TRAC_IK::TRAC_IK(chain, joint_min, joint_max, timeout, epsilon, solvetype);
+      return newX;
     }
 
 
@@ -164,22 +162,9 @@ namespace std {
     {
 
       KDL::Frame frame;
-      // geometry_msgs::Pose pose;
-      // pose.position.x = x;
-      // pose.position.y = y;
-      // pose.position.z = z;
-      // pose.orientation.x = rx;
-      // pose.orientation.y = ry;
-      // pose.orientation.z = rz;
-      // pose.orientation.w = rw;
-
-      /* replace this tf::poseMsgToKDL(pose, frame); */
-      /* Why? it's a dependency hell... */
-      //void poseMsgToKDL(const geometry_msgs::Pose &m, KDL::Frame &k)
       frame.p[0] = x;
       frame.p[1] = y;
       frame.p[2] = z;
-      
       frame.M = KDL::Rotation::Quaternion(rx, ry, rz, rw);
 
       KDL::JntArray in(q_init.size()), out(q_init.size());
@@ -204,6 +189,34 @@ namespace std {
       for (uint z=0; z < q_init.size(); z++)
           vout.push_back(out(z));
 
+      return vout;
+    }
+
+    // Add FK in case it is needed
+    std::vector<std::vector<double> > JntToCart(const std::vector<double> cfg)
+    {
+      KDL::JntArray q(cfg.size());
+      for (uint i = 0; i < cfg.size(); i++)
+        q(i) = cfg[i];
+
+      KDL::Frame frame;
+
+      KDL::Chain chain;
+      $self->getKDLChain(chain);
+      KDL::ChainFkSolverPos_recursive fksolver(chain);
+      int rc = fksolver.JntToCart(q, frame);
+      
+      std::vector<std::vector<double> > vout;
+      // If no solution, return empty vector which acts as None
+      if (rc < 0)
+          return vout;
+
+      vout = {
+        {frame(0, 0), frame(0, 1), frame(0, 2), frame(0, 3)},
+        {frame(1, 0), frame(1, 1), frame(1, 2), frame(1, 3)},
+        {frame(2, 0), frame(2, 1), frame(2, 2), frame(2, 3)},
+        {frame(3, 0), frame(3, 1), frame(3, 2), frame(3, 3)},        
+      };
       return vout;
     }
 

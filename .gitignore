@@ -14,3 +14,7 @@ __pycache__
 *_wrap.cpp
 *_wrap.py
 
+# Testing/Coverage files
+.pytest_cache
+.coverage
+cov_html

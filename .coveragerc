@@ -1,0 +1,2 @@
+[run]
+omit = */version.py, */trac_ik_wrap.py
