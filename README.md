@@ -10,7 +10,7 @@ Main differences from original library/bindings:
 
 ## Install
 Clone the repo and install using `pip`:
-```
+```shell
 git clone https://github.com/mjd3/tracikpy.git
 pip install tracikpy
 ```
@@ -50,7 +50,7 @@ assert np.linalg.norm(ee_diff[:3, :3] - np.eye(3), ord=1) < 1e-3
 ```
 which should not output any assertion errors since the pose is close to the desired pose.
 
-TODO:
+## TODO
  - Fix GitHub Actions CI (figure out how to include external deps)
  - Migrate SWIG std_vector.i templates to numpy.i (see [here](https://numpy.org/devdocs/reference/swig.interface-file.html))
  - Integrate CIBuildWheel?
