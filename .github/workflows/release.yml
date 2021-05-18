@@ -46,7 +46,7 @@ jobs:
     - name: Install System Deps
       run: |
         sudo apt-get update
-        sudo apt-get install -y libeigen3-dev liborocos-kdl-dev libkdl-parser-dev liburdf-dev libnlopt-dev
+        sudo apt-get install -y libeigen3-dev liborocos-kdl-dev libkdl-parser-dev liburdf-dev libnlopt-dev libnlopt-cxx-dev
     - name: Install Tracikpy and Pytest
       run: pip install .[test] coveralls
     - name: Run Tests
