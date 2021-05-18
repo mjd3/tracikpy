@@ -1,5 +1,6 @@
-import pytest
 import numpy as np
+import pytest
+
 from tracikpy import TracIKSolver
 
 
@@ -93,9 +94,9 @@ def test_ik_fk(ik_solver, ee_pose):
     assert np.all(ee_out_list == ee_out)
 
     # Test random initialization (no qinit specified)
-    qout = None
-    while qout is None:
-        qout = ik_solver.ik(ee_pose)
+    # Set numpy seed for deterministic tests
+    np.random.seed(0)
+    qout = ik_solver.ik(ee_pose)
     ee_out = ik_solver.fk(qout)
     ee_diff = np.linalg.inv(ee_pose) @ ee_out
     assert np.linalg.norm(ee_diff[:3, 3], ord=1) < 1e-3

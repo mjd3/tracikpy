@@ -1,13 +1,16 @@
 #!/usr/bin/env python
 import os
-from setuptools import setup, find_packages, Extension
+
+from setuptools import Extension, find_packages, setup
 from setuptools.command.build_py import build_py as _build_py
 
 
+# Build extensions before python modules,
+# or the generated SWIG python files will be missing.
 class build_py(_build_py):
     def run(self):
         self.run_command("build_ext")
-        return super().run()
+        super(_build_py, self).run()
 
 
 # load __version__ without importing anything

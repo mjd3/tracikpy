@@ -33,13 +33,14 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install pip
+    - name: Install Pytest
       run: |
         python -m pip install --upgrade pip
+        pip install setuptools wheel pytest
     - name: Install System Deps
       run: |
-        sudo apt-get install -y libeigen3-dev liborocos-kdl-dev libkdl-parser-dev liburdf-dev libnlopt-dev
-    - name: Install Tracikpy and Pytest
-      run: pip install .[test]
+        sudo apt-get install -y libeigen3-dev liborocos-kdl-dev libkdl-parser-dev liburdf-dev libnlopt-dev libnlopt-cxx-dev
+    - name: Install Tracikpy
+      run: pip install .
     - name: Run Tests
-      run: pytest --cov=tracikpy tests/
+      run: pytest

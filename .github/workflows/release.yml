@@ -45,11 +45,17 @@ jobs:
         python -m pip install --upgrade pip
     - name: Install System Deps
       run: |
+        sudo apt-get update
         sudo apt-get install -y libeigen3-dev liborocos-kdl-dev libkdl-parser-dev liburdf-dev libnlopt-dev
     - name: Install Tracikpy and Pytest
-      run: pip install .[test]
+      run: pip install .[test] coveralls
     - name: Run Tests
       run: pytest --cov=tracikpy tests/
+    - name: Coverage Report
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == 3.6
+      env:
+        CODECOV_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: coveralls
   
   release:
     name: Create GitHub Release

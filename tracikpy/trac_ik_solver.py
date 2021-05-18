@@ -5,6 +5,7 @@
 # Convenience code to wrap TRAC IK
 
 import numpy as np
+
 from .swig.trac_ik_wrap import TRAC_IK
 
 
