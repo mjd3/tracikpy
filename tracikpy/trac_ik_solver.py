@@ -78,7 +78,7 @@ class TracIKSolver:
         :rtype: np.ndarray of float.
         """
         if qinit is None:
-            qinit = np.random.uniform(*self.joint_limits)
+            qinit = np.random.default_rng().uniform(*self.joint_limits)
         elif len(qinit) != self.number_of_joints:
             raise ValueError(
                 f"qinit has length {len(qinit):d} "

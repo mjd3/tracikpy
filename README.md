@@ -3,6 +3,7 @@ This repo contains Python bindings for TracIK based on the ROS packages and SWIG
 ```
 sudo apt-get install libeigen3-dev liborocos-kdl-dev libkdl-parser-dev liburdf-dev libnlopt-dev
 ```
+Note that for Ubuntu 20.04, `libnlopt-cxx-dev` is also needed to install the C++ bindings for `nlopt`.
 
 Main differences from original library/bindings:
  - ROS and Boost dependencies removed (replaced with C++ standard library calls).
@@ -54,7 +55,7 @@ assert np.linalg.norm(ee_diff[:3, :3] - np.eye(3), ord=1) < 1e-3
 which should not output any assertion errors since the pose is close to the desired pose.
 
 ## TODO
- - Fix GitHub Actions CI (figure out how to include external deps)
+ - GitHub Actions CI for MacOS and Windows
  - Migrate SWIG std_vector.i templates to numpy.i (see [here](https://numpy.org/devdocs/reference/swig.interface-file.html))
  - Integrate CIBuildWheel?
 
