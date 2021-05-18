@@ -18,7 +18,7 @@ Main differences from original library/bindings:
 Clone the repo and install using `pip`:
 ```shell
 git clone https://github.com/mjd3/tracikpy.git
-pip install tracikpy
+pip install tracikpy/
 ```
 That's it!
 
@@ -51,14 +51,26 @@ Note that the `qinit` argument is optional; if you do not include it then it wil
 You can also check the solution using forward kinematics:
 ```python
 ee_out = ik_solver.fk(qout)
-assert np.linalg.norm(ee_diff[:3, 3], ord=1) < 1e-3
-assert np.linalg.norm(ee_diff[:3, :3] - np.eye(3), ord=1) < 1e-3
+ee_diff = np.linalg.inv(ee_pose) @ ee_out
+trans_err = np.linalg.norm(ee_diff[:3, 3], ord=1)
+angle_err = np.arccos(np.trace(ee_diff[:3, :3] - 1) / 2)
+assert trans_err < 1e-3
+assert angle_err < 1e-3 or angle_err - np.pi < 1e-3
 ```
 which should not output any assertion errors since the pose is close to the desired pose.
+
+## Unit Tests
+To run the unit tests for this project, install the repo with the `test` option and run `pytest`:
+```shell
+cd /path/to/tracikpy
+pip install -e .[tests]
+pytest
+```
 
 ## TODO
  - GitHub Actions CI for MacOS and Windows
  - Migrate SWIG std_vector.i templates to numpy.i (see [here](https://numpy.org/devdocs/reference/swig.interface-file.html))
  - Integrate CIBuildWheel?
 
+## Acknowledgments
 Many thanks to TRACLabs (Patrick Beeson and Barrett Ames) for the initial TracIK library, to Sammy Pfeiffer for the initial Python bindings, and to Clemens Eppner for initial cleanup to remove ROS dependencies.

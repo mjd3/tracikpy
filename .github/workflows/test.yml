@@ -40,7 +40,8 @@ jobs:
         pip install setuptools wheel pytest
     - name: Install System Deps
       run: |
-        sudo apt-get install -y libeigen3-dev liborocos-kdl-dev libkdl-parser-dev liburdf-dev libnlopt-dev libnlopt-cxx-dev
+        sudo apt-get update -qq -y
+        sudo apt-get install -qq -y libeigen3-dev liborocos-kdl-dev libkdl-parser-dev liburdf-dev libnlopt-dev libnlopt-cxx-dev
     - name: Install Tracikpy
       run: pip install .
     - name: Run Tests

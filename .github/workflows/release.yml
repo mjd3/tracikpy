@@ -45,10 +45,10 @@ jobs:
         python -m pip install --upgrade pip
     - name: Install System Deps
       run: |
-        sudo apt-get update
-        sudo apt-get install -y libeigen3-dev liborocos-kdl-dev libkdl-parser-dev liburdf-dev libnlopt-dev libnlopt-cxx-dev
+        sudo apt-get update -qq -y
+        sudo apt-get install -qq -y libeigen3-dev liborocos-kdl-dev libkdl-parser-dev liburdf-dev libnlopt-dev libnlopt-cxx-dev
     - name: Install Tracikpy and Pytest
-      run: pip install .[test] coveralls
+      run: pip install -e .[test] coveralls
     - name: Run Tests
       run: pytest --cov=tracikpy tests/
     - name: Coverage Report
