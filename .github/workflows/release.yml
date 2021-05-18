@@ -54,8 +54,8 @@ jobs:
     - name: Coverage Report
       if: matrix.os == 'ubuntu-latest' && matrix.python-version == 3.6
       env:
-        CODECOV_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: coveralls
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: coveralls --service=github
   
   release:
     name: Create GitHub Release
