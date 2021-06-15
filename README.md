@@ -63,7 +63,7 @@ which should not output any assertion errors since the pose is close to the desi
 To run the unit tests for this project, install the repo with the `test` option and run `pytest`:
 ```shell
 cd /path/to/tracikpy
-pip install -e .[tests]
+pip install -e .[test]
 pytest
 ```
 
