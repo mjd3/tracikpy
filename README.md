@@ -1,11 +1,11 @@
 # Tracikpy
 [![status](https://github.com/mjd3/tracikpy/workflows/Release%20Tracikpy/badge.svg)](https://github.com/mjd3/tracikpy/actions) [![Coverage Status](https://coveralls.io/repos/github/mjd3/tracikpy/badge.svg?branch=main)](https://coveralls.io/github/mjd3/tracikpy?branch=main) [![style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-This repo contains Python bindings for TracIK based on the ROS packages and SWIG bindings provided by TRACLabs [here](https://bitbucket.org/traclabs/trac_ik/src/master/) (see [paper](https://ieeexplore.ieee.org/document/7363472) for implementation details) and the updates provided by Clemens Eppner [here](https://bitbucket.org/clemi/trac_ik/src/devel/). For now, it only supports Ubuntu operating systems. The goal of this repo is to encapsulate these bindings into a Python package that can be easily installed using `pip` (with `numpy` as the only Python dependency) and can be used independently of ROS. This package does still contain several system-level dependencies (`eigen`, `orocos-kdl`, `nlopt`, `urdf`, and `kdl_parser`); if you have already installed ROS then these will be installed already. If not, you can install using `apt-get`:
+This repo contains Python bindings for TracIK based on the ROS packages and SWIG bindings provided by TRACLabs [here](https://bitbucket.org/traclabs/trac_ik/src/master/) (see [paper](https://ieeexplore.ieee.org/document/7363472) for implementation details) and the updates provided by Clemens Eppner [here](https://bitbucket.org/clemi/trac_ik/src/devel/). For now, it only supports Ubuntu operating systems. The goal of this repo is to encapsulate these bindings into a Python package that can be easily installed using `pip` (with `numpy` as the only Python dependency) and can be used independently of ROS. This package does still contain several system-level dependencies (`eigen`, `orocos-kdl`, `nlopt`, `urdfdom`, and `kdl_parser`); if you have already installed ROS then these will be installed already. If not, you can install using `apt-get`:
 ```
-sudo apt-get install libeigen3-dev liborocos-kdl-dev libkdl-parser-dev liburdf-dev libnlopt-dev
+sudo apt-get install libeigen3-dev liborocos-kdl-dev libkdl-parser-dev liburdfdom-dev libnlopt-dev
 ```
-Note that for Ubuntu 20.04, `libnlopt-cxx-dev` is also needed to install the C++ bindings for `nlopt`.
+For Ubuntu 20.04, `libnlopt-cxx-dev` is also needed to install the C++ bindings for `nlopt`.
 
 Main differences from original library/bindings:
  - ROS and Boost dependencies removed (replaced with C++ standard library calls).
@@ -69,7 +69,7 @@ pytest
 
 ## TODO
  - GitHub Actions CI for MacOS and Windows
- - Migrate SWIG std_vector.i templates to numpy.i (see [here](https://numpy.org/devdocs/reference/swig.interface-file.html))
+ - Migrate SWIG std_vector.i templates to numpy.i (see [here](https://numpy.org/devdocs/reference/swig.interface-file.html)) or migrate to pybind11.
  - Integrate CIBuildWheel?
 
 ## Acknowledgments

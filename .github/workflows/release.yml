@@ -32,7 +32,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: [3.6, 3.7, 3.8, 3.9]
-        os: [ubuntu-latest]
+        os: [ubuntu-20.04, ubuntu-18.04]
     
     steps:
     - uses: actions/checkout@v2
@@ -46,7 +46,10 @@ jobs:
     - name: Install System Deps
       run: |
         sudo apt-get update -qq -y
-        sudo apt-get install -qq -y libeigen3-dev liborocos-kdl-dev libkdl-parser-dev liburdf-dev libnlopt-dev libnlopt-cxx-dev
+        sudo apt-get install -qq -y libeigen3-dev liborocos-kdl-dev libkdl-parser-dev liburdfdom-dev libnlopt-dev
+    - name: Install CXX Dep (Ubuntu 20.04 only)
+      if: matrix.os == 'ubuntu-20.04'
+      run: sudo apt-get install -qq -y libnlopt-cxx-dev
     - name: Install Tracikpy and Pytest
       run: pip install -e .[test] coveralls
     - name: Run Tests
