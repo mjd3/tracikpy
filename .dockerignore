@@ -1,0 +1,26 @@
+# VSCode settings
+.vscode
+
+# C++ Extensions
+build
+*.so
+
+# Python caching and package stuff
+*.pyc
+*.egg-info
+__pycache__
+
+# Swig generated files
+*_wrap.cpp
+*_wrap.py
+
+# Testing/Coverage files
+.pytest_cache
+.coverage
+cov_html
+
+# Other unneeded files
+.flake8
+.coveragerc
+.gitignore
+.github
