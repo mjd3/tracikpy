@@ -138,7 +138,7 @@ class MultiTracIKSolver:
     @property
     def number_of_joints(self):
         return self.ik_procs[0].ik_solver.number_of_joints
-    
+
     @property
     def joint_names(self):
         return self.ik_procs[0].ik_solver.joint_names
@@ -179,12 +179,20 @@ class MultiTracIKSolver:
     def ik(self, ee_pose, qinit=None, num_seeds=1):
         if not isinstance(ee_pose, np.ndarray) or ee_pose.shape != (4, 4):
             raise ValueError("ee_pose must be numpy array of shape (4, 4)!")
-        if qinit is not None and (not isinstance(qinit, np.ndarray) or qinit.shape != (self.number_of_joints,)):
-            raise ValueError(f"qinit must either be None or numpy array of shape ({self.number_of_joints},)!")
+        if qinit is not None and (
+            not isinstance(qinit, np.ndarray)
+            or qinit.shape != (self.number_of_joints,)
+        ):
+            raise ValueError(
+                "qinit must either be None or numpy array of "
+                f"shape ({self.number_of_joints},)!"
+            )
 
         self.ik_procs[0].ik(ee_pose, qinit, ind=0)
         for i in range(num_seeds - 1):
-            self.ik_procs[(i + 1) % self.num_workers].ik(ee_pose, qinit=qinit, ind=i)
+            self.ik_procs[(i + 1) % self.num_workers].ik(
+                ee_pose, qinit=qinit, ind=i
+            )
 
         # collect computed iks
         final_ik_inds = []
@@ -195,7 +203,7 @@ class MultiTracIKSolver:
                 continue
             final_ik_inds.append(output[0])
             final_ik.append(output[1])
-        
+
         if len(final_ik) == 0:
             final_ik = np.empty(self.number_of_joints)
             final_ik.fill(np.nan)

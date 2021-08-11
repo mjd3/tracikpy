@@ -9,7 +9,11 @@ from tracikpy import MultiTracIKSolver
 def ik_solver(num_workers):
     if num_workers is not None:
         return MultiTracIKSolver(
-            "data/franka_panda.urdf", "panda_link0", "panda_hand", timeout=0.05, num_workers=num_workers
+            "data/franka_panda.urdf",
+            "panda_link0",
+            "panda_hand",
+            timeout=0.05,
+            num_workers=num_workers,
         )
     else:
         return MultiTracIKSolver(
@@ -54,16 +58,36 @@ def test_init(ik_solver):
         "panda_hand",
     )
 
+
 # Test bad initialization
 def test_bad_init():
     with pytest.raises(ValueError):
-        MultiTracIKSolver("data/franka_panda.urdf", "panda_link0", "panda_hand", timeout=0.05, num_workers=2.5)
+        MultiTracIKSolver(
+            "data/franka_panda.urdf",
+            "panda_link0",
+            "panda_hand",
+            timeout=0.05,
+            num_workers=2.5,
+        )
 
     with pytest.raises(ValueError):
-        MultiTracIKSolver("data/franka_panda.urdf", "panda_link0", "panda_hand", timeout=0.05, num_workers=0)
+        MultiTracIKSolver(
+            "data/franka_panda.urdf",
+            "panda_link0",
+            "panda_hand",
+            timeout=0.05,
+            num_workers=0,
+        )
 
     with pytest.raises(ValueError):
-        MultiTracIKSolver("data/franka_panda.urdf", "panda_link0", "panda_hand", timeout=0.05, num_workers=os.cpu_count() + 1)
+        MultiTracIKSolver(
+            "data/franka_panda.urdf",
+            "panda_link0",
+            "panda_hand",
+            timeout=0.05,
+            num_workers=os.cpu_count() + 1,
+        )
+
 
 # Test getting and setting joint limits
 @pytest.mark.parametrize("num_workers", [None])
@@ -99,14 +123,17 @@ def test_joint_limits(ik_solver):
     assert np.allclose(ik_solver.joint_limits[1], new_limits[1])
 
 
-# Test solving FK in parallel 
+# Test solving FK in parallel
 @pytest.mark.parametrize("num_workers", [None])
 def test_multi_fk(ik_solver):
-    rand_qs = np.random.default_rng().uniform(*ik_solver.joint_limits, size=(100, ik_solver.number_of_joints))
+    rand_qs = np.random.default_rng().uniform(
+        *ik_solver.joint_limits, size=(100, ik_solver.number_of_joints)
+    )
     output_fks = ik_solver.fk(rand_qs)
     assert output_fks.shape == (100, 4, 4)
     output_fks = ik_solver.fk(rand_qs.tolist())
     assert output_fks.shape == (100, 4, 4)
+
 
 @pytest.mark.parametrize("num_workers", [None])
 def test_multi_ik(ik_solver, ee_pose):
@@ -116,7 +143,9 @@ def test_multi_ik(ik_solver, ee_pose):
     assert not np.isnan(qout).any()
 
     # Test solving IK in parallel with qinit
-    qout = ik_solver.ik(ee_pose, qinit=np.zeros(ik_solver.number_of_joints), num_seeds=100)
+    qout = ik_solver.ik(
+        ee_pose, qinit=np.zeros(ik_solver.number_of_joints), num_seeds=100
+    )
     assert not np.isnan(qout).any()
     assert qout.shape == (ik_solver.number_of_joints,)
 
@@ -128,17 +157,25 @@ def test_multi_ik(ik_solver, ee_pose):
     )
     assert np.isnan(qout).all()
 
+
 @pytest.mark.parametrize("num_workers", [None])
 def test_multi_iks(ik_solver, ee_pose):
     # Test iks with no qinit
-    qouts = ik_solver.iks(np.repeat(ee_pose[None, ...], 100, axis=0), num_seeds=100)
+    qouts = ik_solver.iks(
+        np.repeat(ee_pose[None, ...], 100, axis=0), num_seeds=100
+    )
     assert qouts.shape == (100, ik_solver.number_of_joints)
     assert not np.isnan(qouts).any()
 
     # Test iks with qinit
-    qouts = ik_solver.iks(np.repeat(ee_pose[None, ...], 100, axis=0), qinits=np.zeros((100, ik_solver.number_of_joints)), num_seeds=100)
+    qouts = ik_solver.iks(
+        np.repeat(ee_pose[None, ...], 100, axis=0),
+        qinits=np.zeros((100, ik_solver.number_of_joints)),
+        num_seeds=100,
+    )
     assert qouts.shape == (100, ik_solver.number_of_joints)
     assert not np.isnan(qouts).any()
+
 
 # Test that exceptions are raised correctly for bad inputs
 @pytest.mark.parametrize("num_workers", [None])
@@ -154,7 +191,10 @@ def test_bad_inputs(ik_solver, ee_pose):
         ik_solver.iks(ee_pose[None, :3, :3])
 
     with pytest.raises(ValueError):
-        ik_solver.iks(np.repeat(ee_pose[None, ...], 100, axis=0), np.zeros((99, ik_solver.number_of_joints)))
+        ik_solver.iks(
+            np.repeat(ee_pose[None, ...], 100, axis=0),
+            np.zeros((99, ik_solver.number_of_joints)),
+        )
 
     with pytest.raises(ValueError):
         ik_solver.fk(bad_qinit)
