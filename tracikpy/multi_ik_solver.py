@@ -174,9 +174,9 @@ class MultiTracIKSolver:
         return fks
 
     # Find ik for a single ee_pose and multiple seeds distributed
-    # between processes. Returns the closest to qinit if specified;
-    # otherwise the first found
-    def ik(self, ee_pose, qinit=None, num_seeds=1):
+    # between processes. Returns the closest (according to norm)
+    # to qinit if specified; otherwise the first found
+    def ik(self, ee_pose, qinit=None, num_seeds=1, norm=2):
         if not isinstance(ee_pose, np.ndarray) or ee_pose.shape != (4, 4):
             raise ValueError("ee_pose must be numpy array of shape (4, 4)!")
         if qinit is not None and (
@@ -214,7 +214,7 @@ class MultiTracIKSolver:
             return final_ik[final_ik_inds.index(0)]
         else:
             closest_ind = np.argmin(
-                np.linalg.norm(np.array(final_ik) - qinit, axis=1)
+                np.linalg.norm(np.array(final_ik) - qinit, axis=1, ord=norm)
             )
             return final_ik[closest_ind]
 
