@@ -139,14 +139,14 @@ def test_multi_fk(ik_solver):
 def test_multi_ik(ik_solver, ee_pose):
     # Test solving IK in parallel without qinit
     qout = ik_solver.ik(ee_pose, num_seeds=100)
+    assert qout is not None
     assert qout.shape == (ik_solver.number_of_joints,)
-    assert not np.isnan(qout).any()
 
     # Test solving IK in parallel with qinit
     qout = ik_solver.ik(
         ee_pose, qinit=np.zeros(ik_solver.number_of_joints), num_seeds=100
     )
-    assert not np.isnan(qout).any()
+    assert qout is not None
     assert qout.shape == (ik_solver.number_of_joints,)
 
     # Test case where no solution is available (unreachable pose)
@@ -155,26 +155,26 @@ def test_multi_ik(ik_solver, ee_pose):
     qout = ik_solver.ik(
         bad_ee_pose, qinit=np.zeros(ik_solver.number_of_joints)
     )
-    assert np.isnan(qout).all()
+    assert qout is None
 
 
 @pytest.mark.parametrize("num_workers", [None])
 def test_multi_iks(ik_solver, ee_pose):
     # Test iks with no qinit
-    qouts = ik_solver.iks(
+    valid, qouts = ik_solver.iks(
         np.repeat(ee_pose[None, ...], 100, axis=0), num_seeds=100
     )
     assert qouts.shape == (100, ik_solver.number_of_joints)
-    assert not np.isnan(qouts).any()
+    assert valid.all()
 
     # Test iks with qinit
-    qouts = ik_solver.iks(
+    valid, qouts = ik_solver.iks(
         np.repeat(ee_pose[None, ...], 100, axis=0),
         qinits=np.zeros((100, ik_solver.number_of_joints)),
         num_seeds=100,
     )
     assert qouts.shape == (100, ik_solver.number_of_joints)
-    assert not np.isnan(qouts).any()
+    assert valid.all()
 
 
 # Test that exceptions are raised correctly for bad inputs

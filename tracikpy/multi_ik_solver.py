@@ -1,4 +1,5 @@
 import multiprocessing as mp
+from typing import final
 import numpy as np
 import os
 import queue
@@ -48,18 +49,7 @@ class TracIKProc(mp.Process):
             ret = getattr(self, "_" + request[0])(*request[1:-1])
             self.output_queue.put((request[-1], ret))
 
-    def ik(
-        self,
-        grasp,
-        qinit=None,
-        bx=1e-5,
-        by=1e-5,
-        bz=1e-5,
-        brx=1e-3,
-        bry=1e-3,
-        brz=1e-3,
-        ind=None,
-    ):
+    def ik(self, grasp,qinit,bx,by,bz,brx,bry,brz,ind=None):
         self.input_queue.put(
             ("ik", grasp, qinit, bx, by, bz, brx, bry, brz, ind)
         )
@@ -167,8 +157,6 @@ class MultiTracIKSolver:
         fks = np.zeros((len(q), 4, 4))
         for _ in range(len(q)):
             output = self.output_queue.get(True)
-            if output[1] is None:
-                continue
             fks[output[0]] = output[1]
 
         return fks
@@ -176,7 +164,7 @@ class MultiTracIKSolver:
     # Find ik for a single ee_pose and multiple seeds distributed
     # between processes. Returns the closest (according to norm)
     # to qinit if specified; otherwise the first found
-    def ik(self, ee_pose, qinit=None, num_seeds=1, norm=2):
+    def ik(self, ee_pose, qinit=None, bx=1e-5, by=1e-5, bz=1e-5, brx=1e-3, bry=1e-3, brz=1e-3, num_seeds=1, max_q_diffs=None, norm=2):
         if not isinstance(ee_pose, np.ndarray) or ee_pose.shape != (4, 4):
             raise ValueError("ee_pose must be numpy array of shape (4, 4)!")
         if qinit is not None and (
@@ -188,38 +176,39 @@ class MultiTracIKSolver:
                 f"shape ({self.number_of_joints},)!"
             )
 
-        self.ik_procs[0].ik(ee_pose, qinit, ind=0)
+        self.ik_procs[0].ik(ee_pose, qinit, bx=bx, by=by, bz=bz, brx=brx, bry=bry, brz=brz)
+        output = self.output_queue.get(True)
+        if output[1] is not None and (qinit is None or max_q_diffs is None or np.all(np.abs(output[1] - qinit) <= max_q_diffs)):
+           return output[1]
         for i in range(num_seeds - 1):
             self.ik_procs[(i + 1) % self.num_workers].ik(
-                ee_pose, qinit=qinit, ind=i
+                ee_pose, qinit=qinit, bx=bx, by=by, bz=bz, brx=brx, bry=bry, brz=brz
             )
 
         # collect computed iks
-        final_ik_inds = []
         final_ik = []
-        for _ in range(num_seeds):
+        for _ in range(num_seeds - 1):
             output = self.output_queue.get(True)
             if output[1] is None:
                 continue
-            final_ik_inds.append(output[0])
             final_ik.append(output[1])
 
+        final_ik = np.array(final_ik)
         if len(final_ik) == 0:
-            final_ik = np.empty(self.number_of_joints)
-            final_ik.fill(np.nan)
-            return final_ik
+            return None
         elif qinit is None:
             return final_ik[0]
-        elif 0 in final_ik_inds:
-            return final_ik[final_ik_inds.index(0)]
         else:
+            # Filter ik greater than max diff
+            valid_ik = np.ones(len(final_ik), dtype=bool) if max_q_diffs is None else np.all(np.abs(final_ik - qinit) <= max_q_diffs, axis=1)
+            final_ik = final_ik[valid_ik]
             closest_ind = np.argmin(
-                np.linalg.norm(np.array(final_ik) - qinit, axis=1, ord=norm)
+                np.linalg.norm(final_ik - qinit, axis=1, ord=norm)
             )
             return final_ik[closest_ind]
 
     # Finds ik for many ee_pose, qinit pairs
-    def iks(self, ee_poses, qinits=None, num_seeds=1):
+    def iks(self, ee_poses, qinits=None, bx=1e-5, by=1e-5, bz=1e-5, brx=1e-3, bry=1e-3, brz=1e-3, num_seeds=1):
         if (
             not isinstance(ee_poses, np.ndarray)
             or ee_poses.ndim != 3
@@ -241,7 +230,11 @@ class MultiTracIKSolver:
             )
 
         iks = np.empty((len(ee_poses), self.number_of_joints))
+        valid = np.zeros(len(ee_poses), dtype=bool)
         for i, (ee_pose, qinit) in enumerate(zip(ee_poses, qinits)):
-            iks[i] = self.ik(ee_pose, qinit=qinit, num_seeds=num_seeds)
+            ret = self.ik(ee_pose, qinit=qinit, num_seeds=num_seeds)
+            if ret is not None:
+                valid[i] = True
+                iks[i] = ret
 
-        return iks
+        return valid, iks

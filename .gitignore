@@ -16,5 +16,5 @@ __pycache__
 
 # Testing/Coverage files
 .pytest_cache
-.coverage
+.coverage*
 cov_html
